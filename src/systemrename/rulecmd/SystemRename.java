@@ -1,4 +1,4 @@
-package systemnamerename.rulecmd;
+package systemrename.rulecmd;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BaseCustomDialogDelegate;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SystemNameRename extends BaseCommandPlugin {
+public class SystemRename extends BaseCommandPlugin {
     private static final String MENU = "snr_menu";
     private static final String RETURN = "snr_return";
 
