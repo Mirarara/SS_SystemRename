@@ -3,7 +3,7 @@
   "name": "System Rename",
   "author": "Mirarara",
   "version": "1.0.0",
-  "description": "Allows the owner of a system's largest colonial population to rename procgen systems and their stars through colony administrators and portmasters.",
+  "description": "Allows the owner of a system's largest colonial population to rename procgen systems and their stars through administrators, station commanders, and portmasters.",
   "gameVersion": "0.98a-RC8",
   "jars": ["jars/SystemRename.jar"]
 }

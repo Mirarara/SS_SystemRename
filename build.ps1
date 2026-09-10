@@ -1,11 +1,14 @@
 param(
-    [string]$StarsectorPath = "D:\Game\SS198\Starsector"
+    [Parameter(Mandatory = $true)]
+    [string]$StarsectorPath
 )
 
 $ErrorActionPreference = "Stop"
 $modRoot = $PSScriptRoot
 $corePath = Join-Path $StarsectorPath "starsector-core"
-$jdkPath = Join-Path $StarsectorPath "jdk-27+22\bin"
+$jdk = Get-ChildItem -LiteralPath $StarsectorPath -Directory -Filter "jdk-*" | Select-Object -First 1
+if ($null -eq $jdk) { throw "No bundled JDK found in the Starsector folder." }
+$jdkPath = Join-Path $jdk.FullName "bin"
 $classesPath = Join-Path $modRoot "build\classes"
 $jarPath = Join-Path $modRoot "jars\SystemRename.jar"
 $sourcePath = Join-Path $modRoot "src\systemrename\rulecmd\SystemRename.java"

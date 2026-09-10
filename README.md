@@ -5,15 +5,16 @@ Rename procedurally generated star systems and individual stars through a colony
 ## Requirements
 
 - Starsector 0.98a-RC8
-- A player-owned colony in the system
-- The largest combined population share in that system
 
-Story-protected systems cannot be renamed. Ties with another faction do not qualify.
+## How to use
 
-## Use
+1. Have a player-owned colony in a procedurally generated system.
+2. Hold the largest combined population share in that system. Ties do not qualify.
+3. Contact an administrator, station commander, or portmaster at your colony.
+4. Choose **Discuss the system's official designation**.
 
-Contact an eligible official and choose **Discuss the system's official designation**. System and star IDs are never changed.
+Story-protected systems cannot be renamed. System and star IDs are never changed.
 
 ## Build
 
-Run `build.ps1`. Pass `-StarsectorPath` if the game is installed somewhere other than the script's default path.
+Run `build.ps1 -StarsectorPath "<path to Starsector>"`.
