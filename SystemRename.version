@@ -5,8 +5,8 @@
   "modVersion": {
     "major": 1,
     "minor": 0,
-    "patch": 0
+    "patch": 1
   },
   "starsectorVersion": "0.98a-RC8",
-  "directDownloadURL": "https://github.com/Mirarara/SystemRename/releases/latest/download/SystemRename.zip"
+  "directDownloadURL": "https://github.com/Mirarara/SystemRename/releases/download/v1.0.1/SystemRename-1.0.1.zip"
 }
