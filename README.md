@@ -13,6 +13,8 @@ Rename procedurally generated star systems and individual stars through a colony
 3. Contact an administrator, station commander, or portmaster at your colony.
 4. Choose **Discuss the system's official designation**.
 
+In multi-star systems whose stars use standard suffixes from `A` through `F`, the system and all stars can be renamed together while preserving those suffixes.
+
 Story-protected systems cannot be renamed. Only Procgen systems can be renamed. System and star IDs are not changed.
 
 ## Build

@@ -91,15 +91,18 @@ public class SystemRename extends BaseCommandPlugin {
     private static void chooseSystemScope(InteractionDialogAPI dialog) {
         StarSystemAPI system = dialog.getInteractionTarget().getMarket().getStarSystem();
         List<PlanetAPI> stars = getStars(system);
-        if (stars.size() != 1) {
+        boolean singleStar = stars.size() == 1;
+        if (!singleStar && !hasConventionalStarSuffixes(stars)) {
             showNameInput(dialog, "system", -1);
             return;
         }
 
         dialog.getOptionPanel().clearOptions();
-        dialog.getTextPanel().addPara("The official indicates the linked registry entries. \"This system has a "
-                + "single star. Should the new designation apply to both?\"");
-        dialog.getOptionPanel().addOption("Rename both the system and the star.", "snr_system_both");
+        dialog.getTextPanel().addPara(singleStar
+                ? "The official indicates the linked registry entries. \"This system has a single star. Should the new designation apply to both?\""
+                : "The official indicates the linked registry entries. \"This system's stars use lettered designations. Should the new name be applied to the system and each star?\"");
+        dialog.getOptionPanel().addOption(singleStar ? "Rename both the system and the star."
+                : "Rename the system and all of its stars.", "snr_system_both");
         dialog.getOptionPanel().addOption("Rename only the system.", "snr_system_only");
         dialog.getOptionPanel().addOption("Go back.", MENU);
         dialog.setOptionOnEscape("Go back.", MENU);
@@ -112,9 +115,13 @@ public class SystemRename extends BaseCommandPlugin {
             showMenuOrDenial(dialog);
             return;
         }
+        if ("system_both".equals(target) && stars.size() != 1 && !hasConventionalStarSuffixes(stars)) {
+            showMenuOrDenial(dialog);
+            return;
+        }
 
         String subject = "star".equals(target) ? "the star \"" + stars.get(starIndex).getName() + "\""
-                : "system_both".equals(target) ? "the system and its star" : "the system";
+                : "system_both".equals(target) ? "the system and its star" + (stars.size() == 1 ? "" : "s") : "the system";
         dialog.getOptionPanel().clearOptions();
         dialog.getTextPanel().addPara("The official opens a secured registry form for " + subject + ".");
         dialog.getOptionPanel().addOption("Return to designation options.", MENU);
@@ -175,7 +182,7 @@ public class SystemRename extends BaseCommandPlugin {
 
             PlanetAPI star = "star".equals(target) ? stars.get(starIndex) : stars.isEmpty() ? null : stars.get(0);
             boolean unchanged = "star".equals(target) ? name.equals(star.getName())
-                    : "system_both".equals(target) ? name.equals(system.getBaseName()) && star != null && name.equals(star.getName())
+                    : "system_both".equals(target) ? name.equals(system.getBaseName()) && combinedStarNamesMatch(name, stars)
                     : name.equals(system.getBaseName());
             if (unchanged) {
                 dialog.getTextPanel().addPara("The requested designation already matches the registry. No change is made.");
@@ -187,8 +194,15 @@ public class SystemRename extends BaseCommandPlugin {
                 refreshNavigation(system, star);
             } else {
                 system.setBaseName(name);
-                if ("system_both".equals(target) && star != null) star.setName(name);
-                refreshNavigation(system, "system_both".equals(target) ? star : null);
+                if ("system_both".equals(target)) {
+                    for (int i = 0; i < stars.size(); i++) {
+                        PlanetAPI changedStar = stars.get(i);
+                        changedStar.setName(stars.size() == 1 ? name : name + suffixOf(changedStar.getName()));
+                        refreshNavigation(system, changedStar);
+                    }
+                } else {
+                    refreshNavigation(system, null);
+                }
             }
 
             String official = dialog.getInteractionTarget().getActivePerson().getNameString();
@@ -251,6 +265,38 @@ public class SystemRename extends BaseCommandPlugin {
         return stars;
     }
 
+    private static boolean hasConventionalStarSuffixes(List<PlanetAPI> stars) {
+        if (stars.size() < 2 || stars.size() > 6) return false;
+        int found = 0;
+        for (PlanetAPI star : stars) {
+            int bit = suffixBit(star.getName(), stars.size());
+            if (bit == 0 || (found & bit) != 0) return false;
+            found |= bit;
+        }
+        return found == (1 << stars.size()) - 1;
+    }
+
+    private static boolean combinedStarNamesMatch(String name, List<PlanetAPI> stars) {
+        if (stars.size() == 1) return name.equals(stars.get(0).getName());
+        if (!hasConventionalStarSuffixes(stars)) return false;
+        for (PlanetAPI star : stars) {
+            if (!(name + suffixOf(star.getName())).equals(star.getName())) return false;
+        }
+        return true;
+    }
+
+    private static String suffixOf(String name) {
+        if (name == null || name.length() < 2 || name.charAt(name.length() - 2) != ' ') return null;
+        char letter = name.charAt(name.length() - 1);
+        return letter >= 'A' && letter <= 'F' ? name.substring(name.length() - 2) : null;
+    }
+
+    private static int suffixBit(String name, int starCount) {
+        String suffix = suffixOf(name);
+        int index = suffix == null ? -1 : suffix.charAt(1) - 'A';
+        return index >= 0 && index < starCount ? 1 << index : 0;
+    }
+
     private static void refreshNavigation(StarSystemAPI system, PlanetAPI changedStar) {
         if (system.getAutogeneratedJumpPointsInHyper() == null) return;
         NameAssigner names = new NameAssigner(system.getConstellation());
@@ -270,5 +316,11 @@ public class SystemRename extends BaseCommandPlugin {
         assert isStrictlyLargest(8, others.values());
         assert !isStrictlyLargest(7, others.values());
         assert !isStrictlyLargest(0, others.values());
+        assert suffixBit("Example A", 2) == 1;
+        assert suffixBit("Example B", 2) == 2;
+        assert suffixBit("Example C", 2) == 0;
+        assert suffixBit("Example F", 6) == 32;
+        assert suffixBit("Example G", 6) == 0;
+        assert suffixBit("Example", 2) == 0;
     }
 }
