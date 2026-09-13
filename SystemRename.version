@@ -1,5 +1,5 @@
 {
-  "masterVersionFile": "https://raw.githubusercontent.com/Mirarara/SystemRename/main/SystemRename.version",
+  "masterVersionFile": "https://raw.githubusercontent.com/Mirarara/SystemRename/main/SS_SystemRename.version",
   "modName": "System Rename",
   "modThreadId": 0,
   "modVersion": {
@@ -8,5 +8,5 @@
     "patch": 1
   },
   "starsectorVersion": "0.98a-RC8",
-  "directDownloadURL": "https://github.com/Mirarara/SystemRename/releases/download/v1.0.1/SystemRename-1.0.1.zip"
+  "directDownloadURL": "https://github.com/Mirarara/SystemRename/releases/download/v1.0.1/SS_SystemRename-1.0.1.zip"
 }
